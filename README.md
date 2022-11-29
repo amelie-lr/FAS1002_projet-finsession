@@ -23,7 +23,7 @@ certains dossiers cruciaux, mais ils n'y sont pas à des fins éducatives!
     -   ![](/assets/img/copy_all_branches.png)
 
 2.  Ensuite, vous devez activer *GitHub Pages* dans les settings et choisir la
-    *Deploy from a branch* (`gh-pages`). Il faudra que vous fassiez un premier
+    *Deploy from a branch* (`gh-pages`) et (`/root`). Il faudra que vous fassiez un premier
     commit pour que le site web apparaisse pour la première fois. La page
     devrait se trouver à
     **`https://VOTREUSERNAME.github.io/VOTRE-REPERTOIRE/`**.
