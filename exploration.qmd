@@ -127,24 +127,24 @@ p2 + geom_boxplot()
 ## Évolution du ratio H:F
 
 ```{r}
-evolution <- data %>% 
-    group_by(Year, Sex) %>%
-    summarise(nombre = n()) %>%
-    mutate(pourcentage = nombre / sum(n) * 100)
+#evolution <- data %>% 
+#    group_by(Year, Sex) %>%
+#    summarise(nombre = n()) %>%
+#    mutate(pourcentage = nombre / sum(n) * 100)
 
 ```
 
 ```{r}
-evolution_f <- evolution %>% filter(Sex == "F")
-evolution_h <- evolution %>% filter(Sex == "M")
+#evolution_f <- evolution %>% filter(Sex == "F")
+#evolution_h <- evolution %>% filter(Sex == "M")
 
-p3 <- ggplot(evolution_f, aes(x = Year, y = pourcent)) + 
-    geom_line() + 
-    geom_point()
+#p3 <- ggplot(evolution_f, aes(x = Year, y = pourcent)) + 
+#    geom_line() + 
+#    geom_point()
 
-p4 <- ggplot(evolution_h, aes(x = Year, y = pourcent)) + 
-    geom_line() + 
-    geom_point()
+#p4 <- ggplot(evolution_h, aes(x = Year, y = pourcent)) + 
+#    geom_line() + 
+#    geom_point()
 
 ```
 
