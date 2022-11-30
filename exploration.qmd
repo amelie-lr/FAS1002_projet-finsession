@@ -23,6 +23,9 @@ citation: true
 # Inclure les références que vous utilisez dans vos rapports. Je conseille Zotero pour construire
 # ce fichier ou de connecter RStudio directement pour pouvoir citer avec @nom-de-reference.
 bibliography: references.bib
+format: 
+    html: 
+        df-print: paged
 ---
 
 ## Un peu d'interactivité pour le plaisir!
@@ -71,6 +74,77 @@ fig <- fig %>%
 fig
 ```
 
--------------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 À votre imagination de jouer!
+
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(fs)
+library(lubridate)
+library(tidyverse)
+library(skimr)
+```
+
+## Réimportation des données
+
+```{r}
+# créer fonction pour importation des données
+
+data <- read.csv(file = "data/raw/athlete_events.csv")
+
+skim(data)
+
+```
+
+## Données extrèmes
+
+```{r}
+p1 <- ggplot(data = data,
+             mapping = aes(x = Age))
+
+p1 + geom_histogram()
+
+p1 + geom_histogram(color = "black",
+                    fill = "#facade",
+                    binwidth = 2)
+
+data %>% 
+    filter(Age > 78) %>%
+    select(Name, Sex, Age, Team, Games, Sport)
+```
+
+## Age vs sexe
+
+```{r}
+p2 <- ggplot(data = data,
+             mapping = aes(x = Sex, y = Age))
+
+p2 + geom_boxplot()
+```
+
+## Évolution du ratio H:F
+
+```{r}
+evolution <- data %>% 
+    group_by(Year, Sex) %>%
+    summarise(nombre = n()) %>%
+    mutate(pourcentage = nombre / sum(n) * 100)
+
+```
+
+```{r}
+evolution_f <- evolution %>% filter(Sex == "F")
+evolution_h <- evolution %>% filter(Sex == "M")
+
+p3 <- ggplot(evolution_f, aes(x = Year, y = pourcent)) + 
+    geom_line() + 
+    geom_point()
+
+p4 <- ggplot(evolution_h, aes(x = Year, y = pourcent)) + 
+    geom_line() + 
+    geom_point()
+
+```
+

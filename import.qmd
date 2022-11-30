@@ -41,7 +41,7 @@ Par exemple:
 library(fs)
 library(lubridate)
 library(tidyverse)
-#library(skimr)
+library(skimr)
 ```
 
 ```{r download, cache=TRUE}
@@ -67,6 +67,6 @@ Nous constatons que notre dossier contient maintenant les fichiers suivants :
 `r fs::dir_ls(base_path)`
 
 ```{r read}
-df <- read.csv(file = path(base_path, "athlete_events.csv"))
+data <- read.csv(file = path(base_path, "athlete_events.csv"))
 ```
 
