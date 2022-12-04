@@ -1,6 +1,6 @@
 ---
 title: "Importation des données"
-title-block-banner: true
+title-block-banner: false
 description: | 
   Petite description de cette page.
 # à changer
@@ -9,14 +9,14 @@ date: "2022-12-21"
 author:
   - name: "Amélie Levasseur-Raymond"
     # Votre site web perso ou github
-    url: https://github.com/VOTREUSERNAME
+    url: https://amelie-lr.github.io/
     # les champs d'affiliation sont optionnels, vous pouvez les
     # comment out en ajoutant un # devant.
     affiliation: FAS1002
     affiliation-url: https://FAS1002.github.io/A22
     # changer pour votre propre orcid id
     # https://orcid.org/ pour vous inscrire.
-    orcid: 0000-0000-0000-0000
+    # orcid: 0000-0000-0000-0000
 
 # TRUE == Générer une citation pour cette page précise. Pour enlever, mettre false.
 citation: true

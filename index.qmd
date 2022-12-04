@@ -1,5 +1,17 @@
 ---
 title: "FAS1002_projet-final"
+author:
+  - name: "Amélie Levasseur-Raymond"
+    # Votre site web perso ou github
+    url: https://amelie-lr.github.io/
+    # les champs d'affiliation sont optionnels, vous pouvez les
+    # comment out en ajoutant un # devant.
+    affiliation: FAS1002
+    affiliation-url: https://FAS1002.github.io/A22
+    # changer pour votre propre orcid id
+    # https://orcid.org/ pour vous inscrire.
+    # orcid: 0000-0000-0000-0000
+    
 bibliography: references.bib
 ---
 

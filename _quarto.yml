@@ -10,14 +10,14 @@ website:
 
   reader-mode: true
 # URL de votre site une fois publié - <VOTREUSERNAME> à changer 
-  site-url: https://VOTREUSERNAME.github.io/FAS1002_projet-final/
+  site-url: https://amelie-lr.github.io/FAS1002_projet-finsession/
 # URL de votre répertoire - VOTREUSERNAME/VOTRE-RÉPERTOIRE à changer
-  repo-url: https://github.com/VOTREUSERNAME/VOTRE-RÉPERTOIRE/
+  repo-url: https://github.com/amelie-lr/FAS1002_projet-finsession
   repo-actions: [edit, issue, source]
   
 # Options à changer pour le menu ou la barre de navigation
   navbar:
-    background: primary
+    background: dark
     logo: /assets/img/FAS1002.png 	# Logo image to be displayed left of the title.
     logo-alt: Logo du cours FAS1002
     # Alternate text for the logo image.
@@ -25,14 +25,16 @@ website:
     # menu
     left:
       - href: index.qmd
-        text: Page d'accueil
-      - intro.qmd
+        text: Accueil
+      - href: intro.qmd
+        text: Introduction
       - href: import.qmd
         text: Importation
-      - exploration.qmd
+      - href: exploration.qmd
+        text: Exploration
     right:
       - href: a-propos.qmd
-        text: Page à droite 
+        text: FAS1002 
 
 # footer
   page-footer:
@@ -40,8 +42,8 @@ website:
       [Propulsé par des logiciels libres 💖](https://github.com/FAS1002/A22){.nav-link}
     center:
     # Changer VOTRE NOM pour ce que vous voulez
-      - text: "VOTRE NOM"
-        href: mailto:VOTRECOURRIEL@example.com
+      - text: "Amélie LR"
+        href: mailto:amelie.levasseur-raymond@umontreal.ca
     right:
       - icon: github
         href: https://github.com/FAS1002/
@@ -52,9 +54,9 @@ website:
   favicon: /assets/img/FAS1002.png
 format:
   html:
-    theme:
-      light: [flatly, assets/scss/styles.css]
-      dark: [darkly, assets/scss/styles-dark.scss]
+    theme: solar
+#      light: [flatly, assets/scss/styles.css]
+#      dark: [darkly, assets/scss/styles-dark.scss]
     code-fold: true
     code-copy: true
     code-overflow: wrap
@@ -66,4 +68,4 @@ format:
 execute:
   freeze: auto
   
-editor: visual
+editor: source
