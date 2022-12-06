@@ -42,6 +42,7 @@ library(fs)
 library(lubridate)
 library(tidyverse)
 library(skimr)
+library(googlesheets4)
 ```
 
 ```{r download, cache=TRUE}
@@ -54,6 +55,12 @@ fpath <- path(base_path, fname)
 
 download.file(url = url, 
               destfile = fpath)
+
+# Données : Gapminder - Life Expectancy at Birth
+url_life <- "https://docs.google.com/a/gapminder.org/spreadsheets/d/1RheSon1-q4vFc3AGyupVPH6ptEByE-VtnjOCselU0PE/edit"
+# prob demande authentification Google
+#read_sheet(url_life, sheet = "data-lex-in-colums", range = NULL, skip = 1, trim_ws = TRUE, col_names = TRUE) 
+# Read a sheet from a URL, a Sheet ID, or a dribble from the googledrive package. See front page for more read arguments. Same as range_read().
 
 ```
 
@@ -68,5 +75,13 @@ Nous constatons que notre dossier contient maintenant les fichiers suivants :
 
 ```{r read}
 data <- read.csv(file = path(base_path, "athlete_events.csv"))
+# ou remplacer par fname
+```
+
+```{r}
+# quelques info utiles
+# file.info(data/raw/fichier.csv)
+
+# paste avec le file.path quand on ouvre
 ```
 
