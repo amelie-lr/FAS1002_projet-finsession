@@ -277,7 +277,7 @@ Important
 <div class="cell">
 
 </div>
-<div class="cell" data-hash="import_cache/html/download_dcc8b619d49ea22ab172bb324eaa8220">
+<div class="cell" data-hash="import_cache/html/download_e6290665b098724bcca884884b3860db">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="st">"https://github.com/FAS1002/A22/raw/main/assets/fichiers/olympic_archive.zip"</span></span>
@@ -288,10 +288,16 @@ Important
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>fpath <span class="ot">&lt;-</span> <span class="fu">path</span>(base_path, fname)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> url, </span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> fpath)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">destfile =</span> fpath)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Données : Gapminder - Life Expectancy at Birth</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>url_life <span class="ot">&lt;-</span> <span class="st">"https://docs.google.com/a/gapminder.org/spreadsheets/d/1RheSon1-q4vFc3AGyupVPH6ptEByE-VtnjOCselU0PE/edit"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># prob demande authentification Google</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#read_sheet(url_life, sheet = "data-lex-in-colums", range = NULL, skip = 1, trim_ws = TRUE, col_names = TRUE) </span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a sheet from a URL, a Sheet ID, or a dribble from the googledrive package. See front page for more read arguments. Same as range_read().</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>Le fichier a été téléchargé ici : <strong>data/raw/2022-11-29_olympic-archive.zip</strong></p>
+<p>Le fichier a été téléchargé ici : <strong>data/raw/2022-12-06_olympic-archive.zip</strong></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -299,15 +305,25 @@ Important
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">exdir =</span> base_path)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning in unzip(zipfile = fpath, exdir = base_path): error 1 in extracting from
-zip file</code></pre>
+<pre><code>Warning in unzip(zipfile = fpath, exdir = base_path): error -1 in extracting
+from zip file</code></pre>
 </div>
 </div>
-<p>Nous constatons que notre dossier contient maintenant les fichiers suivants : data/raw/2022-11-29_olympic-archive.zip, data/raw/athlete_events.csv, data/raw/noc_regions.csv</p>
+<p>Nous constatons que notre dossier contient maintenant les fichiers suivants : data/raw/2022-11-29_olympic-archive.zip, data/raw/2022-12-06_olympic-archive.zip, data/raw/athlete_events.csv, data/raw/noc_regions.csv</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> <span class="fu">path</span>(base_path, <span class="st">"athlete_events.csv"</span>))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> <span class="fu">path</span>(base_path, <span class="st">"athlete_events.csv"</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ou remplacer par fname</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quelques info utiles</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># file.info(data/raw/fichier.csv)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># paste avec le file.path quand on ouvre</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
