@@ -25,9 +25,6 @@ citation: true
 bibliography: references.bib
 ---
 
-Il est maintenant le temps de décrire votre projet avant de passer au document suivant, soit l'importation et la manipulation des données.
-
-Je vous conseille d'écrire cette partie en dernier, une fois que vous aurez déjà vos résultats et figures afin d'éviter de réécrire cette page plusieurs fois.
 
 ::: callout-important
 N'oubliez pas d'inclure vos références sur chacune des pages!
@@ -38,50 +35,183 @@ Par exemple:
 > Les données proviennent entre autres de @owidenergy.
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
+# activer les packages utilisés dans le projet
 library(fs)
 library(lubridate)
 library(tidyverse)
 library(skimr)
 library(googlesheets4)
+library(readxl)
+library(knitr)
 ```
 
-```{r download, cache=TRUE}
-url <- "https://github.com/FAS1002/A22/raw/main/assets/fichiers/olympic_archive.zip"
+## Téléchargement des données
 
+### Our World in Data - Energy
+
+> Les données proviennent de @owidenergy.
+
+```{r download_owi, cache=TRUE}
+
+# chemin relatif vers le dossier qui contient les données brutes
 base_path <- path("data", "raw")
 
-fname <- paste(today(), "olympic-archive.zip", sep = "_")
-fpath <- path(base_path, fname)
+url_energy <- "https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv"
 
-download.file(url = url, 
-              destfile = fpath)
+# personnaliser le nom du fichier téléchargé en y ajoutant la date du jour
+fname_energy <- paste(today(), "owid-energy-data.csv", sep = "_")
+# établir le chemin relatif complet de notre fichier personnalisé téléchargé
+fpath_energy <- path(base_path, fname_energy)
 
-# Données : Gapminder - Life Expectancy at Birth
-url_life <- "https://docs.google.com/a/gapminder.org/spreadsheets/d/1RheSon1-q4vFc3AGyupVPH6ptEByE-VtnjOCselU0PE/edit"
-# prob demande authentification Google
-#read_sheet(url_life, sheet = "data-lex-in-colums", range = NULL, skip = 1, trim_ws = TRUE, col_names = TRUE) 
-# Read a sheet from a URL, a Sheet ID, or a dribble from the googledrive package. See front page for more read arguments. Same as range_read().
+# télécharger les données seulement si elles n'ont pas déjà été téléchargées aujourd'hui
+# inspiré de : https://stackoverflow.com/questions/14904983/how-do-i-check-the-existence-of-a-downloaded-file
+# télécharge seulement si le fichier en date du jour n'existe pas en supprimant l'ancienne version
+if (!file.exists(fpath_energy)) {
+    file.remove(paste(base_path, dir(path = base_path, pattern = "*_owid-energy-data.csv"), sep = "/"))
+    download.file(url = url_energy, 
+              destfile = fpath_energy)
+}
 
 ```
 
-Le fichier a été téléchargé ici : **`r fpath`**
+Le fichier a été téléchargé ici : **`r fpath_energy`**
 
-```{r extraction}
-unzip(zipfile = fpath, 
-      exdir = base_path)
+### Gapminder - Life Expectancy at Birth
+
+```{r download_gm, cache=TRUE}
+
+# url prise de Download lastest version : Excel file
+url_life <- "https://docs.google.com/spreadsheets/d/1RheSon1-q4vFc3AGyupVPH6ptEByE-VtnjOCselU0PE/export?format=xlsx"
+
+# pour ne pas avoir de demande d'authentification Google
+gs4_deauth()
+
+# date sans le jour (année-mois)
+today_month <- paste(year(today()), month(today()), sep = "-")
+# personnaliser le nom du fichier téléchargé en y ajoutant la date du jour
+fname_life <- paste(today_month, "gm-life-expectancy-data.xlsx", sep = "_")
+# établir le chemin relatif complet de notre fichier personnalisé téléchargé
+fpath_life <- path(base_path, fname_life)
+
+if (!file.exists(fpath_life)) {
+    file.remove(paste(base_path, dir(path = base_path, pattern = "*_gm-life-expectancy-data.xlsx"), sep = "/"))
+    download.file(url = url_life, 
+              destfile = fpath_life)
+}
+
 ```
-Nous constatons que notre dossier contient maintenant les fichiers suivants : 
+
+Le fichier a été téléchargé ici : **`r fpath_life`**
+
+Nous constatons maintenant que notre dossier contient les fichiers suivants :  
 `r fs::dir_ls(base_path)`
 
-```{r read}
-data <- read.csv(file = path(base_path, "athlete_events.csv"))
-# ou remplacer par fname
+## Premier coup d'oeil
+
+Voyons d'abord plus en détails ce que nous avons comme données.
+
+```{r read, message=FALSE}
+
+data_energy <- as_tibble(read_csv(file = fpath_energy))
+
+data_life <- as_tibble(read_excel(fpath_life, sheet = "data-for-countries-etc-by-year", range = NULL, trim_ws = TRUE, col_names = TRUE))
+
 ```
 
-```{r}
-# quelques info utiles
-# file.info(data/raw/fichier.csv)
+### Énergie
+
+```{r read_energy}
+
+kable(slice_sample(data_energy, n = 10))
+
+```
+
+Première question à se poser : Utiliserons-nous toutes ces variables?  
+Sûrement pas, d'autant plus qu'il semble y avoir beaucoup d'informations manquantes. Nous y reviendrons...
+
+### Espérance de vie
+
+```{r read_life}
+
+kable(slice_sample(data_life, n = 10))
+
+```
+
+```{r info}
+# quelques info utiles sur le fichier
+#file.info(fpath_energy)
 
 # paste avec le file.path quand on ouvre
 ```
 
+
+## Nettoyage des données
+
+À première vue, les données sembles être bien arrangées et *tidy*. Rien de trop grave ne saute aux yeux.  
+Uniformisons cependant les noms des colonnes entre les deux jeux de données en les nettoyant un peu par le fait même.
+
+```{r}
+
+# renommer les titres de colonnes de data_life pour concorder avec ceux de data_energy
+data_life_clean <- data_life %>%
+    dplyr::rename(life_expectancy = `Life expectancy`,
+                  year = `time`,
+                  country = `name`,
+                  iso_code = `geo`)
+
+```
+
+Les codes ISO des pays devraient aussi être uniformisés pour les avoir en majuscules dans les deux jeux.
+
+```{r}
+
+# convertir les codes ISO du jeux data_life pour qu'ils soient en majuscules
+# inspiré de : https://stackoverflow.com/questions/16516593/convert-from-lowercase-to-uppercase-all-values-in-all-character-variables-in-dat
+data_life_clean$iso_code <- toupper(data_life_clean$iso_code)
+
+```
+
+Xxxx 
+
+```{r}
+
+# pour remplir les cases vides de Province/Territoire
+#table[table == ""] <- NA
+
+```
+
+
+## Manipulations
+
+Nous ne conservons que les variables qui nous intéressent du jeux Energy. Nous nous attarderons donc seulement à l'énergie **consommée**.
+
+```{r}
+
+data_energy_cons <- data_energy %>%
+    select(iso_code,
+           country,
+           year,
+           population,
+           contains("cons")
+           )
+
+kable(slice_sample(data_energy_cons, n = 10))
+
+```
+
+Déjà beaucoup mieux, nous sommes passé de `r ncol(data_energy)` à `r ncol(data_energy_cons)` variables. 
+Mais il y encore encore beaucoup de bruit, réduisons encore un peu plus.
+
+```{r}
+
+data_energy_cons <- data_energy_cons %>%
+    select(iso_code,
+           country,
+           year,
+           population,
+           contains("consumption")
+           )
+
+kable(slice_sample(data_energy_cons, n = 10))
+
+```
