@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/exploration.html</loc>
+    <lastmod>2022-12-17T18:20:59.274Z</lastmod>
+  </url>
+  <url>
     <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/intro.html</loc>
-    <lastmod>2022-12-12T22:42:58.869Z</lastmod>
-  </url>
-  <url>
-    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/a-propos.html</loc>
-    <lastmod>2022-12-12T22:42:59.605Z</lastmod>
-  </url>
-  <url>
-    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/index.html</loc>
-    <lastmod>2022-12-12T22:43:00.673Z</lastmod>
+    <lastmod>2022-12-17T18:20:59.778Z</lastmod>
   </url>
   <url>
     <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/import.html</loc>
-    <lastmod>2022-12-12T22:43:02.401Z</lastmod>
+    <lastmod>2022-12-17T18:21:01.646Z</lastmod>
   </url>
   <url>
-    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/exploration.html</loc>
-    <lastmod>2022-12-12T22:43:03.297Z</lastmod>
+    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/index.html</loc>
+    <lastmod>2022-12-17T18:21:02.286Z</lastmod>
+  </url>
+  <url>
+    <loc>https://amelie-lr.github.io/FAS1002_projet-finsession/a-propos.html</loc>
+    <lastmod>2022-12-17T18:21:02.638Z</lastmod>
   </url>
 </urlset>
