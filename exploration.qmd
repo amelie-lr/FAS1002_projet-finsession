@@ -85,6 +85,7 @@ library(fs)
 library(lubridate)
 library(tidyverse)
 library(skimr)
+library(knitr)
 ```
 
 ## Réimportation des données
@@ -92,36 +93,38 @@ library(skimr)
 ```{r}
 # créer fonction pour importation des données
 
-data <- read.csv(file = "data/raw/athlete_events.csv")
+data_energy_cons_clean <- as_tibble(read.csv(file = "data/processed/owid-energy-consumption-data.csv"))
 
-skim(data)
+data_life_clean <- as_tibble(read.csv(file = "data/processed/gm-life-expectancy-data.csv"))
+
+# skim(data)
 
 ```
 
 ## Données extrèmes
 
 ```{r}
-p1 <- ggplot(data = data,
-             mapping = aes(x = Age))
-
-p1 + geom_histogram()
-
-p1 + geom_histogram(color = "black",
-                    fill = "#facade",
-                    binwidth = 2)
-
-data %>% 
-    filter(Age > 78) %>%
-    select(Name, Sex, Age, Team, Games, Sport)
+# p1 <- ggplot(data = data,
+#              mapping = aes(x = Age))
+# 
+# p1 + geom_histogram()
+# 
+# p1 + geom_histogram(color = "black",
+#                     fill = "#facade",
+#                     binwidth = 2)
+# 
+# data %>% 
+#     filter(Age > 78) %>%
+#     select(Name, Sex, Age, Team, Games, Sport)
 ```
 
 ## Age vs sexe
 
 ```{r}
-p2 <- ggplot(data = data,
-             mapping = aes(x = Sex, y = Age))
-
-p2 + geom_boxplot()
+# p2 <- ggplot(data = data,
+#              mapping = aes(x = Sex, y = Age))
+# 
+# p2 + geom_boxplot()
 ```
 
 ## Évolution du ratio H:F
@@ -147,4 +150,59 @@ p2 + geom_boxplot()
 #    geom_point()
 
 ```
+
+## Life Expectancy at Birth
+
+#### Tâche : calculer le temps écoulé **en jours** entre la première année que des données ont été récoltées pour chacun des pays et la production de ce rapport
+
+Identifions d'abord la première année pour chaque pays.
+
+```{r}
+
+# source : https://stackoverflow.com/questions/60460203/finding-year-of-first-occurrence-in-r
+life_country <- data_life_clean %>%
+    # ne conserver que les variables utiles à la tâche
+    select(country, year) %>%
+    # grouper les observation par pays et ordonner selon l'année
+    group_by(country) %>%
+    arrange(country, year) %>%
+    # ne conserver que la première année pour chaque pays
+    slice_min(order_by = year, n = 1)
+
+first_year <- unique(life_country$year)
+
+```
+
+Nous nous retrouvons donc avec les années suivantes : `r first_year`
+
+Puisque nous n'avons pas la date exacte dans le jeu de données, mais seulement l'année, nous établirons cette date au 1er juillet, soit au milieu de l'année, pour calculer le nombre de jours écoulés.
+
+```{r}
+
+# préciser une date exacte
+first_year <- as.Date(paste0(first_year, "-07-01"))
+
+# calculer le nombre de jours écoulés
+# source code : https://bookdown.org/Tazinho/Tidyverse-Cookbook/dates-and-times.html
+# source timezone : https://rdrr.io/r/base/timezones.html
+days_passed <- difftime(lubridate::ymd(first_year, tz = Sys.timezone()), 
+                        lubridate::ymd(today(), tz = Sys.timezone()), 
+                        units = "days") %>%
+    as.double() %>%
+    round() %>%
+    abs()
+
+countries_1800 <- paste(life_country$country[life_country$year == "1800"], collapse = ", ")
+countries_1950 <- paste(life_country$country[life_country$year == "1950"], collapse = ", ")
+
+
+tibble(c(countries_1800, countries_1950), lubridate::year(first_year), days_passed) %>%
+    rename(first_year = `lubridate::year(first_year)`,
+           countries = `c(countries_1800, countries_1950)`) %>%
+    kable()
+
+```
+
+
+
 

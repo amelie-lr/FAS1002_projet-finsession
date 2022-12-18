@@ -1,0 +1,60 @@
+@import 'https://fonts.googleapis.com/css2?family=Roboto&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Roboto-Slab&display=swap';
+
+$font-family-sans-serif: "Roboto", sans-serif !important;
+$font-family-serif: "Roboto Slab", sans-serif !important;
+
+h1, h2, h3, h4, h5 {
+    font-family: Roboto Slab;
+    color: #b58900;
+    border-bottom : none !important;
+}
+
+h2 {
+    border-top : 0.5px solid #b58900;
+    margin-top: 4rem !important;
+    padding-top: 1rem;
+}
+
+h3, h4 {
+    font-weight: 100 !important;
+}
+
+.cell-output-display {
+    margin-bottom : 2rem;
+    padding : 10px;
+    border: 0.5px solid #ffffff;
+}
+
+// Base document colors
+// $body-bg: #011C27;
+// $body-color: white;
+// $link-color: #62959C;
+// $navbar-bg: #62959C;
+
+// $light: #fff;
+
+// Navigation element colors
+// $footer-bg: #181818;
+// $navbar-bg: #303030;
+// $sidebar-bg: #303030;
+
+// Code blocks
+// $code-block-bg-alpha: -.8;
+
+// Bootstrap popovers
+// $popover-bg: #242424;
+
+// Bootstrap inputs
+// $input-bg: #242424;
+
+
+/*-- scss:rules --*/
+
+// .layout-example {
+//   background: $gray-700;
+// }
+
+/*-- scss:rules --*/
+// .dark-mode { display: block; }
+// .light-mode { display: none; }

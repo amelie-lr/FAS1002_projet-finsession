@@ -173,14 +173,6 @@ data_life_clean$iso_code <- toupper(data_life_clean$iso_code)
 
 ```
 
-Xxxx 
-
-```{r}
-
-# pour remplir les cases vides de Province/Territoire
-#table[table == ""] <- NA
-
-```
 
 
 ## Manipulations
@@ -256,6 +248,15 @@ html <- "https://ourworldindata.org/grapher/continents-according-to-our-world-in
 data_continents <- read_html(x = html) %>%
     html_element(css = ".data-table") #%>% 
     #html_table()
+
+```
+
+## Sauvegarde de nos jeux de données nettoyées
+
+```{r}
+
+write_csv(data_energy_cons, file = "data/processed/owid-energy-consumption-data.csv")
+write_csv(data_life_clean, file = "data/processed/gm-life-expectancy-data.csv")
 
 ```
 

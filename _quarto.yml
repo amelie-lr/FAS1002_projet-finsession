@@ -54,7 +54,7 @@ website:
   favicon: /assets/img/FAS1002.png
 format:
   html:
-    theme: solar
+    theme: [solar, assets/scss/styles-solar.scss]
 #      light: [flatly, assets/scss/styles.css]
 #      dark: [darkly, assets/scss/styles-dark.scss]
     code-fold: true
