@@ -30,9 +30,6 @@ bibliography: references.bib
 N'oubliez pas d'inclure vos références sur chacune des pages!
 :::
 
-Par exemple:
-
-> Les données proviennent entre autres de @owidenergy.
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 # activer les packages utilisés dans le projet
@@ -44,7 +41,7 @@ library(googlesheets4)
 library(readxl)
 library(knitr)
 library(rvest)
-
+library(countrycode)
 ```
 
 ## Téléchargement des données
@@ -79,6 +76,8 @@ if (!file.exists(fpath_energy)) {
 Le fichier a été téléchargé ici : **`r fpath_energy`**
 
 ### Gapminder - Life Expectancy at Birth
+
+> Les données proviennent de @gmlifeexpectancy
 
 ```{r download_gm}
 
@@ -139,20 +138,13 @@ kable(slice_sample(data_life, n = 10))
 
 ```
 
-```{r info}
-# quelques info utiles sur le fichier
-#file.info(fpath_energy)
-
-# paste avec le file.path quand on ouvre
-```
 
 
 ## Nettoyage des données
 
-À première vue, les données semblent être bien arrangées et *tidy*. Rien de trop grave ne saute aux yeux.  
-Uniformisons cependant les noms des colonnes entre les deux jeux de données en les nettoyant un peu par le fait même.
+À première vue, les données semblent être bien arrangées et *tidy*. Rien de trop grave ne saute aux yeux. Uniformisons cependant les noms des colonnes entre les deux jeux de données en les nettoyant un peu par le fait même.
 
-```{r}
+```{r cleaning_col_names}
 
 # renommer les titres de colonnes de data_life pour concorder avec ceux de data_energy
 data_life_clean <- data_life %>%
@@ -165,7 +157,7 @@ data_life_clean <- data_life %>%
 
 Les codes ISO des pays devraient aussi être uniformisés pour les avoir en majuscules dans les deux jeux.
 
-```{r}
+```{r cleaning_iso_upper}
 
 # convertir les codes ISO du jeux data_life pour qu'ils soient en majuscules
 # inspiré de : https://stackoverflow.com/questions/16516593/convert-from-lowercase-to-uppercase-all-values-in-all-character-variables-in-dat
@@ -177,9 +169,9 @@ data_life_clean$iso_code <- toupper(data_life_clean$iso_code)
 
 ## Manipulations
 
-Nous ne conservons que les variables qui nous intéressent du jeux Energy. Nous nous attarderons donc seulement à l'énergie **consommée**.
+Nous ne conserverons que les variables qui nous intéressent du jeux Energy. Nous nous attarderons donc seulement à l'énergie **consommée**.
 
-```{r}
+```{r reduce_variables1}
 
 data_energy_cons <- data_energy %>%
     select(iso_code,
@@ -196,7 +188,7 @@ kable(slice_sample(data_energy_cons, n = 10))
 Déjà beaucoup mieux, nous sommes passé de `r ncol(data_energy)` à `r ncol(data_energy_cons)` variables. 
 Mais il y encore encore beaucoup de bruit, réduisons encore un peu plus.
 
-```{r}
+```{r reduce_variables2}
 
 data_energy_cons <- data_energy_cons %>%
     select(iso_code,
@@ -210,53 +202,70 @@ kable(slice_sample(data_energy_cons, n = 10))
 
 ```
 
-**revoir cette dernière partie, pas encore fonctionnelle**
-
-Après une analyse un peu plus poussée des jeux de données, nous constatons que les observations du jeu *Energy* sont parfois celles d'un pays et d'autres, celles d'un continent. Il serait donc préférable de séparer ce jeux en deux. Puisque les continents n'ont pas de donnée inscrite à la colonne *iso_code*, nous pouvons utiliser cette caractéristique pour les extraire.
-
-```{r}
-
-data_energy_cons_continent <- data_energy_cons %>%
-    dplyr::filter(is.na(iso_code))
-
-```
-
-On remarque toutefois, outre les nombreuses régions et autres subdivisions énumérées, que certains pays n'avaient pas de code ISO et ont donc été inclus :  
-`r unique(data_energy_cons_continent$country)`
-
-Nous les retirerons alors aussi du jeux principal, question d'avoir des données le plus complètes possible.
-
-Et pour simplifier notre jeu sur les continents, nous ne retiendrons que l'essentiel.
-
-```{r}
-
-data_energy_cons_continent <- data_energy_cons_continent %>%
-    dplyr::filter(iso_code == "Africa")
-
-```
-
 
 ### Ajout d'une variable *continents*
 
-URL de la source des données pour réaliser la tâche :  
-[https://ourworldindata.org/grapher/continents-according-to-our-world-in-data?tab=table](https://ourworldindata.org/grapher/continents-according-to-our-world-in-data?tab=table)
+> Pour ce faire, nous utiliserons le package de @countrycodepack
 
-```{r}
+```{r add_continents, warning=FALSE, message=FALSE, error=FALSE}
 
-html <- "https://ourworldindata.org/grapher/continents-according-to-our-world-in-data?tab=table"
+data_energy_cons_clean <- data_energy_cons %>%
+    mutate(countrycode(data_energy_cons$iso_code, origin = "iso3c", destination = "continent", custom_match = c( ATA = 'Antartica', ANT = 'Americas')), .before = 1) %>%
+    rename(continent = `countrycode(...)`)
 
-data_continents <- read_html(x = html) %>%
-    html_element(css = ".data-table") #%>% 
-    #html_table()
+kable(slice_sample(data_energy_cons_clean, n = 10))
 
 ```
 
-## Sauvegarde de nos jeux de données nettoyées
+Un message nous mentionne que deux codes ISO de pays n'ont pas trouvé d'équivalent, nous avons donc dû les ajouter au code manuellement.
+
+Après une analyse un peu plus poussée du jeu de données, nous constatons que la variable *country* correspond parfois à un pays et d'autres, à un continent ou région. Il serait donc préférable d'éliminer ces observations du jeu maintenant que nous avons ajouté la variable *continent*. 
+
+```{r clean_countries}
+
+data_energy_cons_clean <- data_energy_cons_clean %>%
+    filter(!is.na(continent))
+
+```
+
+Les pays sont donc maintenant associés aux continents suivants dans notre jeu de données :  
+`r unique(data_energy_cons_clean$continent)`
+
+
+
+
+
 
 ```{r}
 
-write_csv(data_energy_cons, file = "data/processed/owid-energy-consumption-data.csv")
+# html <- ""
+# 
+# data_continents <- read_html(x = html) %>%
+#     html_element(css = ".data-table") #%>% 
+#     #html_table()
+
+```
+
+```{r info}
+# quelques info utiles sur le fichier
+#file.info(fpath_energy)
+
+# paste avec le file.path quand on ouvre
+```
+
+
+
+
+
+
+## Sauvegarde de nos jeux de données nettoyés
+
+```{r save_clean_data}
+
+write_csv(data_energy_cons_clean, file = "data/processed/owid-energy-consumption-data.csv")
 write_csv(data_life_clean, file = "data/processed/gm-life-expectancy-data.csv")
 
 ```
 
+Nous voilà maintenant avec nos deux jeux de données nettoyés que nous pourrons réutiliser :  
+`r fs::dir_ls("data/processed")`
