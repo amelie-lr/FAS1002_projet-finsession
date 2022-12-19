@@ -1,5 +1,5 @@
 ---
-title: "Titre de votre page d'exploration"
+title: "Exploration des jeux de données"
 title-block-banner: false
 description: | 
   Petite description de cette page.
@@ -28,57 +28,6 @@ format:
         df-print: paged
 ---
 
-## Un peu d'interactivité pour le plaisir!
-
-```{r map}
-library(leaflet)
-leaflet() %>%
-    setView(lng=150,
-            lat=-30,
-            zoom = 3) %>%
-    addTiles() %>%
-    addMarkers(lng=174.768,
-               lat=-36.852,
-               popup="Là où R est né") %>%
-    addProviderTiles(providers$Esri.WorldGrayCanvas)
-```
-
-## Peut-être que ça vous inspirera!
-
-```{r plotly, message=FALSE, warning=FALSE}
-library(plotly)
-library(gapminder)
-df <- gapminder
-
-fig <- df %>%
-  plot_ly(
-    x = ~ gdpPercap,
-    y = ~ lifeExp,
-    size = ~ pop,
-    color = ~ continent,
-    frame = ~ year,
-    text = ~ country,
-    hoverinfo = "text",
-    type = 'scatter',
-    mode = 'markers',
-    width = "100%",
-    height = 600
-  )
-
-fig <- fig %>% layout(xaxis = list(type = "log"))
-
-fig <- fig %>%
-  animation_button(
-    x = 0, xanchor = "left", y = -0.15, yanchor = "bottom"
-  )
-fig
-```
-
-------------------------------------------------------------------------
-
-À votre imagination de jouer!
-
-
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 library(fs)
@@ -86,70 +35,82 @@ library(lubridate)
 library(tidyverse)
 library(skimr)
 library(knitr)
+library(psych)
+
+# ma fonction pour créer my_theme afin de personnaliser et surtout uniformiser les visalisations
+source("R/helper.R")
 ```
+
 
 ## Réimportation des données
 
 ```{r}
-# créer fonction pour importation des données
 
 data_energy_cons_clean <- as_tibble(read.csv(file = "data/processed/owid-energy-consumption-data.csv"))
 
 data_life_clean <- as_tibble(read.csv(file = "data/processed/gm-life-expectancy-data.csv"))
 
-# skim(data)
-
 ```
 
-## Données extrèmes
+Vous pouvez télécharger les deux jeux de données nettoyés ci-dessous.
+
+- [Energy](data/processed/owid-energy-consumption-data.csv)
+- [Life Expectancy at Birth](data/processed/gm-life-expectancy-data.csv)
+
+
+## Première exploration
+
+Observons à quoi ressemblent nos données.
+
+Dans le jeu *Energy*, nous avons les `r ncol(data_energy_cons_clean)` variables suivantes :  
+`r colnames(data_energy_cons_clean)`
+
+Nous avons `r data_energy_cons_clean$country %>% unique() %>% length()` pays dans le jeu *Energy* et `r data_life_clean$country %>% unique() %>% length()` pays observés dans le jeu *Life Expectancy*. 
+
+### Quelques statistiques
+
+#### Energy
 
 ```{r}
-# p1 <- ggplot(data = data,
-#              mapping = aes(x = Age))
-# 
-# p1 + geom_histogram()
-# 
-# p1 + geom_histogram(color = "black",
-#                     fill = "#facade",
-#                     binwidth = 2)
-# 
-# data %>% 
-#     filter(Age > 78) %>%
-#     select(Name, Sex, Age, Team, Games, Sport)
+
+data_energy_cons_clean %>%
+    skim() %>%
+    kable()
+
 ```
 
-## Age vs sexe
+#### Life Expectancy at Birth
 
 ```{r}
-# p2 <- ggplot(data = data,
-#              mapping = aes(x = Sex, y = Age))
-# 
-# p2 + geom_boxplot()
-```
 
-## Évolution du ratio H:F
-
-```{r}
-#evolution <- data %>% 
-#    group_by(Year, Sex) %>%
-#    summarise(nombre = n()) %>%
-#    mutate(pourcentage = nombre / sum(n) * 100)
+data_life_clean %>%
+    skim() %>%
+    kable()
 
 ```
 
 ```{r}
-#evolution_f <- evolution %>% filter(Sex == "F")
-#evolution_h <- evolution %>% filter(Sex == "M")
 
-#p3 <- ggplot(evolution_f, aes(x = Year, y = pourcent)) + 
-#    geom_line() + 
-#    geom_point()
+# En savoir plus sur les données 
+#lapply(data_energy_cons_clean, summary)
 
-#p4 <- ggplot(evolution_h, aes(x = Year, y = pourcent)) + 
-#    geom_line() + 
-#    geom_point()
+# glimpse(data_life_clean)
+# 
+# data_life_clean %>%
+#     group_by(country) %>%
+#     summarise()
+
+#anti_join(x = data_energy_cons_clean$country, y = data_life_clean$country)
+
+# data_energy_cons_clean %>%
+#     anti_join(data_life_clean,
+#               by = "country") 
+
+#describeBy(data_energy_cons_clean,group = data_energy_cons_clean$continent, mat = TRUE) 
+
 
 ```
+
 
 ## Life Expectancy at Birth
 
@@ -203,6 +164,161 @@ tibble(c(countries_1800, countries_1950), lubridate::year(first_year), days_pass
 
 ```
 
+## Visualisation
 
+Moyenne d'âge selon l'année
+
+```{r}
+
+data_life_clean %>%
+    group_by(year) %>%
+    ggplot() +
+    geom_point(mapping = aes(x = year, y = life_expectancy), 
+                na.rm = TRUE) +
+    my_theme()
+
+```
+
+
+```{r}
+
+# data_life_clean %>%
+#     filter(year == 2020) %>%
+#     ggplot() +
+#       geom_line(mapping = aes(x = country, y = life_expectancy), 
+#                 na.rm = TRUE) +
+#     my_theme()
+
+```
+
+
+Évolution de la population du Canada
+
+```{r}
+
+data_energy_cons_clean %>%
+    filter(country == "Canada") %>%
+    ggplot() +
+      geom_line(mapping = aes(x = year, y = population, colour = country), 
+                na.rm = TRUE) +
+    my_theme()
+
+```
+
+Consommation d'énergie fossile vs renouvelable
+
+```{r}
+
+data_energy_cons_clean %>%
+    ggplot() +
+      geom_point(mapping = aes(x = renewables_consumption, y = fossil_fuel_consumption, color = continent), 
+                 na.rm = TRUE) +
+    my_theme()
+
+```
+
+
+------------------------------
+
+## Un peu d'interactivité pour le plaisir!
+
+```{r map}
+library(leaflet)
+leaflet() %>%
+    setView(lng=150,
+            lat=-30,
+            zoom = 3) %>%
+    addTiles() %>%
+    addMarkers(lng=174.768,
+               lat=-36.852,
+               popup="Là où R est né") %>%
+    addProviderTiles(providers$Esri.WorldGrayCanvas)
+```
+
+## Peut-être que ça vous inspirera!
+
+```{r plotly, message=FALSE, warning=FALSE}
+library(plotly)
+library(gapminder)
+df <- gapminder
+
+fig <- df %>%
+  plot_ly(
+    x = ~ gdpPercap,
+    y = ~ lifeExp,
+    size = ~ pop,
+    color = ~ continent,
+    frame = ~ year,
+    text = ~ country,
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers',
+    width = "100%",
+    height = 600
+  )
+
+fig <- fig %>% layout(xaxis = list(type = "log"))
+
+fig <- fig %>%
+  animation_button(
+    x = 0, xanchor = "left", y = -0.15, yanchor = "bottom"
+  )
+fig
+```
+
+------------------------------------------------------------------------
+
+À votre imagination de jouer!
+
+
+## Données extrèmes
+
+```{r}
+# p1 <- ggplot(data = data,
+#              mapping = aes(x = Age))
+# 
+# p1 + geom_histogram()
+# 
+# p1 + geom_histogram(color = "black",
+#                     fill = "#facade",
+#                     binwidth = 2)
+# 
+# data %>% 
+#     filter(Age > 78) %>%
+#     select(Name, Sex, Age, Team, Games, Sport)
+```
+
+## Age vs sexe
+
+```{r}
+# p2 <- ggplot(data = data,
+#              mapping = aes(x = Sex, y = Age))
+# 
+# p2 + geom_boxplot()
+```
+
+## Évolution du ratio H:F
+
+```{r}
+#evolution <- data %>% 
+#    group_by(Year, Sex) %>%
+#    summarise(nombre = n()) %>%
+#    mutate(pourcentage = nombre / sum(n) * 100)
+
+```
+
+```{r}
+#evolution_f <- evolution %>% filter(Sex == "F")
+#evolution_h <- evolution %>% filter(Sex == "M")
+
+#p3 <- ggplot(evolution_f, aes(x = Year, y = pourcent)) + 
+#    geom_line() + 
+#    geom_point()
+
+#p4 <- ggplot(evolution_h, aes(x = Year, y = pourcent)) + 
+#    geom_line() + 
+#    geom_point()
+
+```
 
 
