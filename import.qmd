@@ -1,10 +1,10 @@
 ---
 title: "Importation des données"
 title-block-banner: false
-description: | 
-  Petite description de cette page.
+# description: | 
+#  Petite description de cette page.
 # à changer
-date: "2022-12-21"
+date: "2022-12-20"
 # Modifier les détails que vous voulez
 author:
   - name: "Amélie Levasseur-Raymond"
@@ -25,10 +25,6 @@ citation: true
 bibliography: references.bib
 ---
 
-
-::: callout-important
-N'oubliez pas d'inclure vos références sur chacune des pages!
-:::
 
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -165,7 +161,7 @@ data_life_clean$iso_code <- toupper(data_life_clean$iso_code)
 
 ```
 
-
+Nous nous retrouvons maintenant avec les noms de colonnes suivants dans le jeu *Life Expectancy at Birth* : `r colnames(data_life_clean)`
 
 ## Manipulations
 
@@ -202,28 +198,24 @@ kable(slice_sample(data_energy_cons, n = 5))
 
 ```
 
-Nous ajouterons aussi une variable *total_consumption* ainsi que *total_consumption_per_capita*.
+Nous ajouterons aussi une variable *primary_energy_cons_per_capita*.
 
 ```{r}
 
 # inspiré de : https://stackoverflow.com/questions/27354734/dplyr-mutate-rowsums-calculations-or-custom-functions
-data_energy_cons <- data_energy_cons %>%
-    mutate(total_consumption = rowSums(across(biofuel_consumption:wind_consumption), 
-                                       na.rm = TRUE))
+# data_energy_cons <- data_energy_cons %>%
+#     mutate(total_consumption = rowSums(across(biofuel_consumption:wind_consumption), 
+#                                        na.rm = TRUE))
 
-data_energy_cons$total_consumption[data_energy_cons$total_consumption == 0.000] <- NA
+# data_energy_cons$total_consumption[data_energy_cons$total_consumption == 0.000] <- NA
 
 data_energy_cons <- data_energy_cons %>%
-    mutate(total_consumption_per_capita = total_consumption / population)
+    mutate(primary_energy_cons_per_capita = primary_energy_consumption / population)
 
 kable(slice_sample(data_energy_cons, n = 5))
 
 ```
 
-::: callout-important
-Noter que la somme des observations contenant seulement des NA indiquait **0.000**.  
-Nous avons préféré remplacer les sommes nulles par **NA**, jugeant qu'il semblait très peu probable que toutes les données soient à 0.000.
-:::
 
 ### Ajout d'une variable *continents*
 
