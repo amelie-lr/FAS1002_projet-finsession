@@ -184,6 +184,19 @@ data_merged <- merge(data_energy_cons_clean,
 
 ```
 
+Afin de simplifier l'analyse, nous allons mettre les différentes consommations par habitant et les convertir en kW/h.
+
+```{r}
+
+# convertir les consommations par habitant et en kilowatt/heure
+data_merged_per_capita <- data_merged %>%
+    mutate(across(.cols = contains("consumption"), .fns = ~ .x / population * 1000000000, .names = "{.col}_per_capita", .keep = "all")) %>%
+    select(!biofuel_consumption:wind_consumption)
+
+kable(slice_sample(data_merged_per_capita, n = 5))
+
+```
+
 
 ## Visualisation
 
@@ -191,10 +204,10 @@ data_merged <- merge(data_energy_cons_clean,
 
 ```{r}
 
-data_merged %>%
+data_merged_per_capita %>%
     group_by(year) %>%
     ggplot() +
-    geom_line(mapping = aes(x = year, y = life_expectancy, color = continent, goup = country), 
+    geom_line(mapping = aes(x = year, y = life_expectancy, color = continent, group = country), 
                 na.rm = TRUE) +
     my_theme()
 
@@ -208,7 +221,7 @@ Les autres points qui se trouvent sous la masse principale indiquent probablemen
 
 ```{r}
 
-data_merged %>%
+data_merged_per_capita %>%
     filter(country == "Canada") %>%
     ggplot() +
       geom_line(mapping = aes(x = year, y = population, colour = country), 
@@ -221,9 +234,9 @@ data_merged %>%
 
 ```{r}
 
-data_merged %>%
+data_merged_per_capita %>%
     ggplot() +
-      geom_point(mapping = aes(x = fossil_fuel_consumption/population, y = renewables_consumption/population, color = continent), 
+      geom_point(mapping = aes(x = fossil_fuel_consumption_per_capita, y = renewables_consumption_per_capita, color = continent), 
                  na.rm = TRUE) +
     my_theme()
 
@@ -235,10 +248,10 @@ On peut constater que l'Asie est une grande consommatrice d'énergie fossile, ta
 
 ```{r}
 
-data_merged %>%
+data_merged_per_capita %>%
     filter(year == 2020) %>%
     ggplot() +
-      geom_point(mapping = aes(x = life_expectancy, y = primary_energy_cons_per_capita, color = continent), 
+      geom_point(mapping = aes(x = life_expectancy, y = primary_energy_consumption_per_capita, color = continent), 
                  na.rm = TRUE) +
     my_theme()
 
@@ -246,19 +259,33 @@ data_merged %>%
 On peut observer une légère tendance à consommer plus par année là où l'on vie plus longtemps.
 
 
-#### Évolution de la consommation d'énergie par habitant
+#### Évolution de la consommation d'énergie primaire par habitant
 
 ```{r}
 
-data_merged %>%
-    #filter(year == 2020) %>%
-    # summarise(primary_energy_consumption = sum(primary_energy_consumption),
-    #           population = sum(population)) %>%
+data_merged_per_capita %>%
     ggplot() +
-      geom_line(mapping = aes(x = year, y = primary_energy_cons_per_capita, color = continent, group = country), 
+      geom_line(mapping = aes(x = year, y = primary_energy_consumption_per_capita, color = continent, group = country), 
                  na.rm = TRUE) +
     xlim(1960,2025) +
     my_theme()
 
 ```
 
+```{r echo=FALSE}
+
+# data_pivot <- data_merged_per_capita %>%
+#     select(-primary_energy_consumption_per_capita, -fossil_fuel_consumption_per_capita) %>%
+#     pivot_longer(cols = contains("capita"),
+#                  names_to = "energy_type",
+#                  values_to = "consumption")
+# 
+# data_pivot %>%
+#     group_by(continent) %>%
+#     ggplot() +
+#       geom_point(mapping = aes(x = year, y = consumption, color = energy_type), 
+#                  na.rm = TRUE) +
+#     xlim(1960,2025) +
+#     my_theme()
+
+```

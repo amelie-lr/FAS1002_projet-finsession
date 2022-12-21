@@ -198,23 +198,6 @@ kable(slice_sample(data_energy_cons, n = 5))
 
 ```
 
-Nous ajouterons aussi une variable *primary_energy_cons_per_capita*.
-
-```{r}
-
-# inspiré de : https://stackoverflow.com/questions/27354734/dplyr-mutate-rowsums-calculations-or-custom-functions
-# data_energy_cons <- data_energy_cons %>%
-#     mutate(total_consumption = rowSums(across(biofuel_consumption:wind_consumption), 
-#                                        na.rm = TRUE))
-
-# data_energy_cons$total_consumption[data_energy_cons$total_consumption == 0.000] <- NA
-
-data_energy_cons <- data_energy_cons %>%
-    mutate(primary_energy_cons_per_capita = primary_energy_consumption / population)
-
-kable(slice_sample(data_energy_cons, n = 5))
-
-```
 
 
 ### Ajout d'une variable *continents*
@@ -244,30 +227,6 @@ data_energy_cons_clean <- data_energy_cons_clean %>%
 
 Les pays sont donc maintenant associés aux continents suivants dans notre jeu de données :  
 `r unique(data_energy_cons_clean$continent)`
-
-
-
-
-
-
-```{r}
-
-# html <- ""
-# 
-# data_continents <- read_html(x = html) %>%
-#     html_element(css = ".data-table") #%>% 
-#     #html_table()
-
-```
-
-```{r info}
-# quelques info utiles sur le fichier
-#file.info(fpath_energy)
-
-# paste avec le file.path quand on ouvre
-```
-
-
 
 
 
